@@ -1,0 +1,40 @@
+\section{Results}
+\label{sec:results}
+
+\para{Main outcomes.} \Tabref{tab:main_results} summarizes the paired comparison across 30 markets. \marketprompt yields large gains in plausibility and alignment, with $p<10^{-5}$ and large effect sizes. Probability error drops to near zero under \marketprompt, while coherence remains at a ceiling of 5.0 in both conditions. Hedging rate and word count changes are small and not statistically significant.
+
+\input{tables/main_results}
+
+\para{Market distribution.} \Figref{fig:market_hist} shows the distribution of market probabilities in the sampled markets. The sample spans low- to high-probability events, with a mean near 0.48, providing a balanced test bed for calibration.
+
+\begin{figure}[t]
+    \centering
+    \includegraphics[width=0.95\linewidth]{figures/market_probability_hist.png}
+    \caption{Distribution of \manifold market probabilities in our 30-market sample.}
+    \label{fig:market_hist}
+\end{figure}
+
+\para{Plausibility and alignment.} The boxplots in \Figref{fig:plausibility} and \Figref{fig:alignment} show a consistent shift upward for \marketprompt across markets. This indicates that explicit probabilities lead the model to adopt more cautious, believable narratives that better reflect uncertainty.
+
+\begin{figure}[t]
+    \centering
+    \includegraphics[width=0.95\linewidth]{figures/plausibility_boxplot.png}
+    \caption{Plausibility scores for baseline vs. \marketprompt narratives. Market conditioning shifts scores upward across most markets.}
+    \label{fig:plausibility}
+\end{figure}
+
+\begin{figure}[t]
+    \centering
+    \includegraphics[width=0.95\linewidth]{figures/alignment_boxplot.png}
+    \caption{Alignment scores with the market prior. \marketprompt achieves near-ceiling alignment across markets.}
+    \label{fig:alignment}
+\end{figure}
+
+\para{Probability error.} \Figref{fig:prob_error} shows the absolute deviation between the judge's implied probability and the market prior. \marketprompt reduces error to near zero across the sample.
+
+\begin{figure}[t]
+    \centering
+    \includegraphics[width=0.95\linewidth]{figures/probability_error_boxplot.png}
+    \caption{Absolute probability error for baseline vs. \marketprompt narratives. Lower is better.}
+    \label{fig:prob_error}
+\end{figure}

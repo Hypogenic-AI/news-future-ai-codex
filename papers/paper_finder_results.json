@@ -1,0 +1,5 @@
+{
+  "error": "Paper-finder service not running at localhost:8000",
+  "fallback": true,
+  "message": "Proceeding with manual search (arXiv, Semantic Scholar, Papers with Code)"
+}

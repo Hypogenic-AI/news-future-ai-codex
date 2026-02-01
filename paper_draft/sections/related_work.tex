@@ -1,0 +1,8 @@
+\section{Related Work}
+\label{sec:related_work}
+
+\para{Forecasting benchmarks and temporal QA.} Early datasets such as \textsc{ForecastQA} cast forecasting as temporal QA, focusing on accuracy for short answers \cite{zhang2021forecastqa}. More recent work expands scale and recency. \citet{dai2025dailyoracle} introduce Daily Oracle, a continuously updated news-based benchmark that highlights temporal degradation in LLM forecasting. These benchmarks provide useful signals about factual prediction but do not evaluate narrative plausibility or uncertainty expression.
+
+\para{Open-ended event forecasting.} Open-ended datasets such as \textsc{OpenForecast} \cite{wang2025openforecast} and \textsc{OpenForesight} \cite{chandak2026openforecaster} move beyond multiple-choice QA toward free-form event prediction. They evaluate generated content with LLM-based or retrieval-augmented methods, but the outputs are still short answers or summaries rather than full news-style narratives. Structured forecasting benchmarks like \textsc{SCTc-TE} \cite{wang2023sctcte} focus on event prediction in temporal graphs, which is complementary but not narrative-focused.
+
+\para{Prediction markets and calibration.} Prediction-market benchmarks such as \textsc{KalshiBench} quantify calibration errors and overconfidence in LLMs \cite{nel2025kalshibench}. The theoretical basis for using market prices as probabilistic priors is well established \cite{wolfers2006theory,wolfers2006prices}. Unlike prior work, we directly inject market probabilities into narrative generation and evaluate the effect on plausibility and alignment.

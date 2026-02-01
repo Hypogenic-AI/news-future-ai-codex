@@ -1,0 +1,3 @@
+[extract_text error: unsupported operand type(s) for +: 'float' and 'IndirectObject']
+[extract_text error: unsupported operand type(s) for +: 'float' and 'IndirectObject']
+[extract_text error: unsupported operand type(s) for +: 'float' and 'IndirectObject']

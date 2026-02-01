@@ -1,0 +1,79 @@
+NBER WORKING PAPER SERIES
+PREDICTION MARKETS IN THEORY AND PRACTICE
+Justin Wolfers
+Eric Zitzewitz
+Working Paper 12083
+http://www.nber.org/papers/w12083
+NATIONAL BUREAU OF ECONOMIC RESEARCH
+1050 Massachusetts Avenue
+Cambridge, MA 02138
+March 2006
+This paper was prepared as the entry on “ Prediction Markets”  for the New Palgrave Dictionary of
+Economics, 2nd edition, edited by Lawrence E. Blume and Steven N. Durlauf (London: Palgrave MacMillan).
+The definitive published version of this extract may be found in the complete New Palgrave Dictionary of
+Economics in print and online, forthcoming.  Thanks to Erik Snowberg for very helpful comments.  The
+views expressed herein are those of the author(s) and do not necessarily reflect the views of the National
+Bureau of Economic Research.
+©2006 by Justin Wolfers and Eric Zitzewitz.  All rights reserved. Short sections of text, not to exceed two
+paragraphs, may be quoted without explicit permission provided that full credit, including © notice, is given
+to the source.
+Prediction Markets in Theory and Practice
+Justin Wolfers and Eric Zitzewitz
+NBER Working Paper No. 12083
+March 2006
+JEL No. C53, D8, G14
+ABSTRACT
+Prediction Markets, sometimes referred to as "information markets," "idea futures" or "event
+futures", are markets where participants trade contracts whose payoffs are tied to a future event,
+thereby yielding prices that can be interpreted as market-aggregated forecasts. This article
+summarizes the recent literature on prediction markets, highlighting both theoretical contributions
+that emphasize the possibility that these markets efficiently aggregate disperse information, and the
+lessons from empirical applications which show that market-generated forecasts typically outperform
+most moderately sophisticated benchmarks. Along the way, we highlight areas ripe for future
+research.
+Justin Wolfers
+Business and Public Policy Department
+Wharton School, University of Pennsylvania
+3620 Locust Walk
+Room 1456 Steinberg-Deitrich Hall
+Philadelphia, PA 19104-6372
+and NBER
+jwolfers@wharton.upenn.edu
+Eric Zitzewitz
+Stanford University
+Graduate School of Business
+518 Memorial Way
+Stanford, CA 94305
+ericz@stanford.edu
+ 1 
+Prediction Markets 
+ 
+Prediction Markets, sometimes referred to as “ information markets,”  “ idea 
+futures”  or “ event futures” , are markets where participants trade contracts whose payoffs 
+are tied to a future event, thereby yielding prices that can be interpreted as market-
+aggregated forecasts.  For instance, in the Iowa Electronic Market, traders buy and sell 
+contracts that pay $1 if a given candidate wins the election.  If a prediction market is 
+efficient, then the prices of these contracts perfectly aggregate dispersed information 
+about the probability of each candidate being elected.  Markets designed specifically 
+around this information aggregation and revelation motive are our focus in this article. 
+ 
+Types of Prediction Markets 
+ 
+The most famous prediction markets are the election forecasting markets run by 
+the University of Iowa (Berg, Forsythe, Nelson and Rietz, 2001).  Election forecasting 
+provides a useful way to introduce a variety of different contract types, and Table 1, 
+adapted from Wolfers and Zitzewitz (2004a), shows how different contracts can be 
+designed to reveal various types of forecasts. 
+ 
+<Table 1 here> 
+ 
+The three main types of contracts link payoffs to the occurrence of a specific 
+event (the incumbent wins the election), a continuous variable (the vote share of the 
+incumbent), or to a combination of the two, such as in spread betting.  In each case, the 
+relevant contract will reveal the market’s expectation of a specific parameter: a 
+probability, mean, or median, respectively.  More complex contract designs can also be 
+used to elicit alternative parameters.  For instance, a family of winner-take-all contracts—
+each linked to different states of nature— can reveal the full probability distribution. 
+Prediction markets have been used to forecast elections, movie revenues, 
+corporate sales, project completion, economic indicators and Saddam Hussein’s demise.  
+New corporate applications have emerged as firms have looked to markets to predict 

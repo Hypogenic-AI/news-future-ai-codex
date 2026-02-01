@@ -1,0 +1,25 @@
+\section{Methodology}
+\label{sec:methodology}
+
+\para{Problem setup.} For each prediction market question $q$ with market probability $p \in [0,1]$, we generate a short news-style narrative $y$ describing a plausible future outcome. We compare two prompting conditions: \baselineprompt omits $p$ and only includes $q$; \marketprompt includes both $q$ and $p$ and instructs the model to match the implied uncertainty.
+
+\begin{figure}[t]
+    \centering
+    \fbox{\begin{minipage}{0.95\linewidth}
+    \small
+    \textbf{Step 1: Market sampling.} Collect unresolved binary markets from \manifold with future close times. \\
+    \textbf{Step 2: Paired generation.} For each market question, generate a baseline article and a market-conditioned article. \\
+    \textbf{Step 3: LLM judging.} Score each article for plausibility, coherence, and alignment; estimate implied probability and compute error. \\
+    \textbf{Step 4: Statistics.} Run paired $t$-tests and compute Cohen's $d$ across 30 market pairs.
+    \end{minipage}}
+    \caption{Overview of the \marketprompt pipeline for future-news narratives.}
+    \label{fig:method}
+\end{figure}
+
+\para{Dataset and preprocessing.} We query the \manifold public API on 2026-02-01 (UTC) and filter to unresolved binary markets with future close dates. We sample 30 markets with a fixed random seed (42) and store canonical fields (id, question, probability, close time, url). The final probabilities range from 0.047 to 0.944 with mean 0.481 and standard deviation 0.233. No markets are missing probabilities.
+
+\para{Generation and judging.} We use \gptfourone for both generation and evaluation. For generation we set temperature to 0.7 with a 700-token limit; for judging we set temperature to 0.0 for determinism. Each market yields two articles (baseline and market-informed). The judge assigns 1--5 scores for plausibility, coherence, and alignment with the market probability. It also estimates an implied probability for the narrative, from which we compute absolute probability error.
+
+\para{Additional metrics.} We measure hedging rate as the number of hedge tokens per 100 words and report word counts to test whether market conditioning changes verbosity.
+
+\para{Statistical analysis.} We compare conditions using paired $t$-tests and report Cohen's $d$ for effect size with $n=30$ paired samples.

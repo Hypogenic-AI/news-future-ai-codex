@@ -1,0 +1,727 @@
+You are an academic paper writer. Generate a complete NEURIPS style paper
+based on the experiment results provided.
+
+════════════════════════════════════════════════════════════════════════════════
+                         IMPORTANT: BEFORE YOU START
+════════════════════════════════════════════════════════════════════════════════
+
+Before writing any content, you MUST complete these steps:
+
+1. READ THE SKILL: Review the paper-writer skill at templates/skills/paper-writer/SKILL.md
+2. READ THE STYLE GUIDE: Study templates/paper_writing/lab_style_guide.md carefully
+3. REVIEW EXAMPLES: Browse paper_examples/ for formatting and language patterns:
+   - Look at sections/1.introduction.tex for language style
+   - Look at tables/*.tex for table formatting
+   - Look at commands/*.tex for macro usage
+4. USE COMMAND TEMPLATES: Copy templates/paper_writing/commands/ to paper_draft/commands/
+
+CRITICAL: Reference example papers for FORMATTING and LANGUAGE STYLE only.
+Do NOT copy content, phrasing, or narrative structure from the example papers.
+The examples are in a different research domain - focus only on presentation style.
+
+════════════════════════════════════════════════════════════════════════════════
+                            EXPERIMENT REPORT
+════════════════════════════════════════════════════════════════════════════════
+
+# REPORT: News from the Future
+
+## 1. Executive Summary
+This study tests whether adding prediction-market probabilities to LLM prompts produces more plausible and better-calibrated future-news narratives than a baseline prompt without market signals. Across 30 paired markets, market-informed prompts significantly improved plausibility and alignment scores while reducing probability error, with no meaningful change in coherence or length. These results suggest prediction-market signals can be a useful prior for generating uncertainty-aware future news narratives.
+
+## 2. Goal
+**Hypothesis**: Combining LLMs with prediction-market probabilities can generate plausible news articles about future events, and those narratives will be better aligned with probabilistic priors than baseline LLM outputs.
+
+**Importance**: Forecasting QA benchmarks evaluate short answers, not full news-style narratives. Narrative generation is more aligned with how humans consume future scenarios, but it is vulnerable to overconfidence and hallucinated specifics. Prediction markets provide probabilistic priors that may anchor narratives to real-world uncertainty.
+
+**Expected impact**: A system that writes plausible &#34;news from the future&#34; could be valuable for scenario planning, policy analysis, and editorial exploration of uncertain events.
+
+## 3. Data Construction
+
+### Dataset Description
+- **Source**: Manifold Markets public API (`/v0/markets`)
+- **Type**: Binary, unresolved prediction markets with future close dates
+- **Sample size**: 30 markets collected; 30 paired samples used in analysis
+- **Collected**: 2026-02-01 (UTC)
+- **Location**: `results/markets.jsonl`
+
+### Example Samples
+| Market Question | Baseline Headline | Market-Informed Headline |
+|---|---|---|
+| Impala Platinum Two PGM 6E Production 2027 | Impala Platinum Reports Mixed PGM 6E Production Figures for Early 2027 | Uncertainty Remains Over Impala Platinum&#39;s 2027 PGM 6E Production Targets |
+| Impala Platinum Zimplats PGM 6E Production 2027 | Zimplats Reports Stable PGM 6E Production in Early 2027 | Outlook Unclear for Zimplats 2027 6E PGM Production as Market Signals 47% Probability |
+| Will Moltbook be TIME person of the year 2026? | Moltbook Not Selected as TIME Person of the Year 2026 | Moltbook Unlikely to Be TIME Person of the Year, Say Observers |
+
+### Data Quality
+- **Missing values**: 0% missing probabilities
+- **Probability range**: min 0.047, max 0.944
+- **Mean probability**: 0.481 (std 0.233)
+- **Quality checks**: verified open, unresolved, future close times; dropped markets missing probability
+
+### Preprocessing Steps
+1. Fetch latest markets from Manifold API.
+2. Filter to unresolved binary markets with future close times.
+3. Randomly sample 30 markets with fixed seed.
+4. Store canonical fields (id, question, probability, close time, url).
+
+### Train/Val/Test Splits
+Not applicable; this is a paired evaluation on a fixed sample of markets.
+
+## 4. Experiment Description
+
+### Methodology
+#### High-Level Approach
+Generate two short future-news articles per market: baseline (no market probability) and market-informed (probability provided). Then evaluate outputs with an LLM judge for plausibility, coherence, and alignment with the provided probability.
+
+#### Why This Method?
+This directly tests the hypothesis that market signals improve narrative plausibility and calibration. Alternatives considered included human evaluation or historical market snapshots, but the current study prioritizes rapid, reproducible evaluation using an LLM judge.
+
+### Implementation Details
+
+#### Tools and Libraries
+- openai 2.16.0
+- pandas 3.0.0
+- numpy 2.4.2
+- scipy 1.17.0
+- matplotlib 3.10.8
+- seaborn 0.13.2
+
+#### Algorithms/Models
+- **Generation model**: `gpt-4.1`
+- **Judge model**: `gpt-4.1`
+
+#### Hyperparameters
+| Parameter | Value | Selection Method |
+|---|---|---|
+| temperature | 0.7 (generation), 0.0 (judge) | standard for diversity / determinism |
+| max_output_tokens | 700 | safe upper bound |
+
+#### Training Procedure or Analysis Pipeline
+1. Collect markets (Manifold API).
+2. Generate baseline articles (no market prior).
+3. Generate market-informed articles (probability prior included).
+4. LLM judge scores each article.
+5. Statistical comparison via paired t-tests; compute Cohen&#39;s d.
+
+### Experimental Protocol
+
+#### Reproducibility Information
+- **Runs**: Single pass for generation and evaluation
+- **Seeds**: Python random seed = 42 (market sampling)
+- **Hardware**: NVIDIA GeForce RTX 3090 (not used for API calls), CPU-based execution
+- **Execution time**: ~7 minutes end-to-end
+
+#### Evaluation Metrics
+- **Plausibility (1-5)**: How believable the narrative is given the question.
+- **Coherence (1-5)**: Clarity and internal consistency.
+- **Alignment (1-5)**: Consistency with market probability.
+- **Probability error (0-1)**: Judge-estimated deviation from the market prior.
+- **Hedging rate**: Simple rate of hedge tokens per 100 words.
+
+### Raw Results
+
+#### Tables
+| Metric | Baseline mean | Market mean | p-value | Cohen&#39;s d | n |
+|---|---:|---:|---:|---:|---:|
+| plausibility | 4.367 | 5.000 | 4.28e-06 | 1.030 | 30 |
+| coherence | 5.000 | 5.000 | NaN | 0.000 | 30 |
+| alignment | 3.133 | 5.000 | 8.19e-09 | 1.459 | 30 |
+| probability_error | 0.282 | 0.000 | 3.58e-08 | -1.354 | 30 |
+| hedging_rate | 0.693 | 0.972 | 0.148 | 0.271 | 30 |
+| word_count | 136.200 | 138.933 | 0.2 | 0.239 | 30 |
+
+#### Visualizations
+- Market probability distribution: `figures/market_probability_hist.png`
+- Plausibility by condition: `figures/plausibility_boxplot.png`
+- Alignment by condition: `figures/alignment_boxplot.png`
+- Probability error by condition: `figures/probability_error_boxplot.png`
+
+#### Output Locations
+- Results JSON: `results/stats.json`
+- Raw generations: `results/articles_baseline.jsonl`, `results/articles_market.jsonl`
+- Judgments: `results/judgments.jsonl`
+- Plots: `figures/`
+
+## 5. Result Analysis
+
+### Key Findings
+1. Market-informed prompts significantly improved plausibility scores (p &lt; 1e-5) with a large effect size (d ~ 1.0).
+2. Alignment with market priors improved substantially (p &lt; 1e-7), and probability error decreased to near-zero.
+3. Coherence was already at ceiling (5.0) for both conditions, indicating no measurable gain.
+
+### Hypothesis Testing Results
+- **Supported**: Market-informed narratives are more plausible and better aligned with market priors.
+- **Significance**: Plausibility and alignment differences are statistically significant; coherence is not.
+
+### Comparison to Baselines
+Market-informed prompts outperformed baseline on plausibility and alignment. Differences in length and hedging were small and not statistically significant.
+
+### Surprises and Insights
+- The judge frequently rated market-informed outputs at the maximum alignment score, suggesting the model strongly follows explicit probability priors.
+- Coherence may be at ceiling for short (120-180 word) articles, limiting sensitivity.
+
+### Error Analysis
+- Baseline articles sometimes sounded overly definitive (e.g., &#34;reports stable production&#34;) even when probabilities were near 0.5.
+- Market-informed articles occasionally over-anchored on the probability (repeating it verbatim) without adding causal detail.
+
+### Limitations
+- No historical market snapshots; only current probabilities were used.
+- LLM-as-judge introduces potential evaluation bias.
+- Small sample size (n=29) and single-run generation.
+- Some markets are niche; generalizability to mainstream news topics is uncertain.
+
+## 6. Conclusions
+Market probabilities materially improve plausibility and probabilistic alignment in LLM-generated future-news narratives in this small-scale study. This supports the hypothesis that prediction markets can serve as an effective prior for narrative generation, though stronger validation (larger samples, human evaluation, historical market snapshots) is needed.
+
+### Implications
+- **Practical**: Market-informed prompts could be used in a &#34;news from the future&#34; website to generate uncertainty-aware narratives.
+- **Theoretical**: Highlights the value of probabilistic priors for narrative generation tasks.
+
+### Confidence in Findings
+Moderate. The effects are strong but rely on an LLM judge and a limited market sample.
+
+## 7. Next Steps
+
+### Immediate Follow-ups
+1. Add human evaluation with blinded raters for plausibility and calibration.
+2. Use historical market probability snapshots to avoid leakage and measure factual accuracy post-resolution.
+
+### Alternative Approaches
+- Test other market sources (Kalshi, Metaculus) for broader coverage.
+- Compare with retrieval-augmented baselines (recent news summaries).
+
+### Broader Extensions
+- Integrate a live web interface that refreshes articles as probabilities change.
+- Add entity tracking and factuality constraints to reduce hallucination.
+
+### Open Questions
+- How sensitive are narratives to small probability changes?
+- Can we calibrate narrative tone to match market uncertainty more precisely?
+
+
+════════════════════════════════════════════════════════════════════════════════
+                            RESEARCH PLAN
+════════════════════════════════════════════════════════════════════════════════
+
+# Planning: News from the Future
+
+## Motivation &amp; Novelty Assessment
+
+### Why This Research Matters
+LLM-generated &#34;news from the future&#34; could help analysts, policymakers, and the public explore plausible futures and prepare for contingencies. Combining LLMs with prediction markets may yield narratives that are both coherent and probabilistically grounded, improving trust and utility for decision-making and scenario planning.
+
+### Gap in Existing Work
+Prior work focuses on forecasting QA or short-form answers and on calibration benchmarks (e.g., Daily Oracle, ForecastQA, KalshiBench). There is limited evaluation of full news-style narratives, and market signals are rarely integrated into generation to shape uncertainty-aware storytelling.
+
+### Our Novel Contribution
+We test a lightweight, market-informed prompting method that injects real prediction-market probabilities into LLM news generation and evaluates whether this improves narrative plausibility and probabilistic alignment over a baseline without market signals.
+
+### Experiment Justification
+- Experiment 1 (Baseline vs Market-Informed generation): Needed to test whether market probabilities improve perceived plausibility and internal consistency of future-news narratives.
+- Experiment 2 (Probability alignment analysis): Needed to quantify whether generated narratives better reflect market priors (calibration alignment) when market signals are provided.
+- Experiment 3 (Error analysis): Needed to identify failure modes (e.g., hallucinated specifics, contradiction with market signal) and assess robustness.
+
+---
+
+## Research Question
+Can combining LLMs with prediction-market probabilities generate more plausible and better-calibrated &#34;news from the future&#34; narratives than a baseline LLM without market signals?
+
+## Background and Motivation
+Forecasting benchmarks show LLMs degrade over time and struggle with calibration. Prediction markets aggregate dispersed information and provide probabilistic signals. A narrative generation system that incorporates market signals may produce more plausible and uncertainty-aware future news, addressing gaps in existing benchmarks that focus on QA rather than narrative plausibility.
+
+## Hypothesis Decomposition
+1. Market-informed prompts improve narrative plausibility vs. baseline prompts.
+2. Market-informed prompts yield narratives whose implied probabilities align more closely with market probabilities.
+3. Market-informed prompts reduce contradiction and overconfident language.
+
+## Proposed Methodology
+
+### Approach
+Use a real prediction-market API to sample unresolved or recently resolved markets, then prompt an LLM to generate short &#34;future news&#34; articles with and without market probabilities. Evaluate plausibility and alignment using a separate LLM-as-judge rubric and numeric alignment metrics.
+
+### Experimental Steps
+1. Collect prediction-market questions and probabilities (Manifold API).
+2. Sample a fixed set of markets and construct prompts for baseline and market-informed conditions.
+3. Generate short news articles using an LLM API (OpenAI).
+4. Evaluate outputs with a judge model for plausibility, coherence, and probability alignment.
+5. Compute statistical comparisons and effect sizes between conditions.
+
+### Baselines
+- Baseline LLM prompt without market probability
+- Market-informed LLM prompt with probability and implied probability request
+
+### Evaluation Metrics
+- LLM-judge plausibility score (1-5)
+- Coherence score (1-5)
+- Market alignment: absolute error between market prob and model-implied prob
+- Linguistic uncertainty markers (hedging rate)
+
+### Statistical Analysis Plan
+- Paired t-test or Wilcoxon signed-rank test on plausibility and alignment metrics
+- Effect size: Cohen&#39;s d for paired samples
+- Significance level: alpha = 0.05
+
+## Expected Outcomes
+Support: Market-informed prompts show higher plausibility and lower probability alignment error. Refute: No significant differences or worse alignment.
+
+## Timeline and Milestones
+- Setup + data collection: 30-45 min
+- Generation + evaluation: 60-90 min
+- Analysis + visualization: 45-60 min
+- Documentation: 30-45 min
+
+## Potential Challenges
+- Limited or noisy market data
+- LLM judge bias
+- Market probability not available historically
+
+## Success Criteria
+- Statistically significant improvement in plausibility and/or probability alignment
+- Clear, reproducible pipeline with saved outputs and evaluation reports
+
+
+════════════════════════════════════════════════════════════════════════════════
+                          LITERATURE REVIEW
+════════════════════════════════════════════════════════════════════════════════
+
+# Literature Review: News from the Future
+
+## Review Scope
+
+### Research Question
+How can we combine LLMs with prediction-market signals to generate plausible news articles about future events, and how should such systems be evaluated?
+
+### Inclusion Criteria
+- LLM forecasting of future events or open-ended forecasting
+- Datasets for event forecasting or temporal QA tied to real-world events
+- Prediction markets used as evaluation or calibration signals
+- Papers with methods, benchmarks, or data applicable to generating future-news narratives
+
+### Exclusion Criteria
+- Pure numeric time-series forecasting without event narratives
+- Datasets without temporal anchoring or future-event focus
+- Non-public or undocumented benchmarks
+
+### Time Frame
+2006–2026 (emphasis on 2021–2026)
+
+### Sources
+- arXiv
+- ACL Anthology
+- PMLR (ICML)
+- NBER working papers
+- HuggingFace datasets
+- GitHub repositories
+
+## Search Log
+
+| Date | Query | Source | Results | Notes |
+|------|-------|--------|---------|-------|
+| 2026-02-01 | &#34;LLM forecasting daily news oracle&#34; | PMLR / arXiv | 1 | Daily Oracle paper (ICML 2025) |
+| 2026-02-01 | &#34;open-ended event forecasting dataset&#34; | ACL Anthology | 1 | OpenForecast (COLING 2025) |
+| 2026-02-01 | &#34;open-ended forecasting from news OpenForesight&#34; | arXiv / project site | 1 | OpenForecaster (arXiv 2026) |
+| 2026-02-01 | &#34;prediction market LLM calibration KalshiBench&#34; | arXiv | 1 | KalshiBench (arXiv 2025) |
+| 2026-02-01 | &#34;ForecastQA event forecasting dataset&#34; | ACL Anthology / project site | 1 | ForecastQA (ACL 2021) |
+| 2026-02-01 | &#34;SCTc-TE temporal event forecasting&#34; | arXiv / GitHub | 1 | SCTc-TE + GDELT-ComplexEvent |
+| 2026-02-01 | &#34;prediction markets theory practice&#34; | NBER | 2 | Wolfers &amp; Zitzewitz papers |
+
+Note: The paper-finder service was unavailable; manual search was used.
+
+## Screening Results
+
+| Paper | Title Screen | Abstract Screen | Full-Text | Notes |
+|------|-------------|-----------------|-----------|-------|
+| Dai et al. 2025 | Include | Include | Include | Daily Oracle benchmark; core to hypothesis |
+| Wang et al. 2025 (OpenForecast) | Include | Include | Include | Large-scale open-ended dataset |
+| Chandak et al. 2026 (OpenForecaster) | Include | Include | Include | Training LLM forecasters from news |
+| Nel 2025 (KalshiBench) | Include | Include | Include | Prediction market calibration benchmark |
+| Zhang et al. 2021 (ForecastQA) | Include | Include | Abstract | Early forecasting QA benchmark |
+| Wang et al. 2023 (SCTc-TE) | Include | Include | Abstract | Temporal event forecasting formulation |
+| Wolfers &amp; Zitzewitz 2006 (PM theory) | Include | Include | Abstract | Foundational PM theory |
+| Wolfers &amp; Zitzewitz 2006 (PM prices) | Include | Include | Abstract | PM price-as-probability basis |
+
+## Paper Summaries
+
+### Paper 1: Are LLMs Prescient? A Continuous Evaluation using Daily News as the Oracle
+- **Authors**: Hui Dai, Ryan Teehan, Mengye Ren
+- **Year**: 2025
+- **Source**: ICML 2025 (PMLR 267)
+- **Key Contribution**: Daily Oracle, a continuously updated forecasting QA benchmark from daily news.
+- **Methodology**:
+  - Collects ~1.25M news articles (Common Crawl News + targeted sources).
+  - LLM-generated TF and MC QA pairs with filtering rubric.
+  - Evaluates closed-book, constrained open-book (BM25 RAG), and gold-article settings.
+- **Datasets Used**: Daily Oracle (16,783 TF + 14,727 MC in the 2020–2024 analysis subset).
+- **Baselines/Models**: GPT-4, GPT-3.5, Llama-3-8B, Mixtral, Claude-3.5, Qwen, Gemma.
+- **Evaluation Metrics**: Accuracy, YoY accuracy decline, refusal rate.
+- **Results**: Forecasting accuracy declines over time (average drop ~21.55% TF, ~11.33% MC). RAG improves accuracy but does not remove temporal degradation.
+- **Code Available**: Yes (project page).
+- **Relevance to Our Research**: Directly ties forecasting to daily news with a continuous, automatically generated benchmark.
+
+### Paper 2: OpenForecast: A Large-Scale Open-Ended Event Forecasting Dataset
+- **Authors**: Zhen Wang, Xi Zhou, Yating Yang, Bo Ma, Lei Wang, Rui Dong, Azmat Anwar
+- **Year**: 2025
+- **Source**: COLING 2025
+- **Key Contribution**: Large-scale open-ended event forecasting dataset and tasks; LLM-based retrieval-augmented evaluation (LRAE).
+- **Methodology**:
+  - Collects complex events from Wikipedia and WCEP.
+  - Uses extraction-then-complement LLM pipeline to build event timelines.
+  - Defines open-ended tasks (STF/LTF/AQA) and closed-ended tasks (MCNC/MCAC/VQA).
+- **Datasets Used**: OpenForecast (43,417 complex events; 473,155 atomic events, 1950–2024).
+- **Baselines**: LLM-based evaluation with LRAE; comparisons with BEM/BertScore.
+- **Evaluation Metrics**: Accuracy/F1 for tasks; LRAE for open-ended scoring.
+- **Results**: LRAE provides higher consistency with human evaluation vs. baselines.
+- **Code Available**: Yes (GitHub).
+- **Relevance**: Provides open-ended event data suitable for generating future-news narratives.
+
+### Paper 3: Scaling Open-Ended Reasoning To Predict the Future
+- **Authors**: Nikhil Chandak, Shashwat Goel, Ameya Prabhu, Moritz Hardt, Jonas Geiping
+- **Year**: 2026 (arXiv:2512.25070)
+- **Source**: arXiv
+- **Key Contribution**: OpenForesight dataset and RL training recipe to create OpenForecaster LLMs.
+- **Methodology**:
+  - Synthesizes open-ended forecasting questions from CommonCrawl News with filtering.
+  - Uses retrieval from a static news corpus to avoid leakage.
+  - Trains Qwen3 models with GRPO using a reward combining accuracy + adapted Brier score.
+- **Datasets Used**: OpenForesight (~50k questions from ~250k articles); test set May–Aug 2025; FutureX benchmark.
+- **Evaluation Metrics**: Accuracy, calibration, consistency, Brier-style reward.
+- **Results**: OpenForecaster-8B competitive with larger proprietary models; improved calibration and consistency.
+- **Code Available**: Yes (GitHub + HF).
+- **Relevance**: Demonstrates end-to-end pipeline for open-ended future-event generation and evaluation.
+
+### Paper 4: Do Large Language Models Know What They Don’t Know? (KalshiBench)
+- **Authors**: Lukas Nel
+- **Year**: 2025 (arXiv:2512.16030)
+- **Source**: arXiv (NeurIPS 2024)
+- **Key Contribution**: Prediction-market benchmark to evaluate LLM calibration on future events.
+- **Methodology**:
+  - Curates Kalshi prediction market questions; filters to post-cutoff resolutions.
+  - Evaluates models on accuracy and calibration metrics.
+- **Datasets Used**: KalshiBench (1,531 total; 300-question filtered sample).
+- **Evaluation Metrics**: Accuracy, F1, Brier score, ECE, reliability diagrams, Brier Skill Score.
+- **Results**: All models show overconfidence; only one model achieves positive Brier Skill Score.
+- **Code Available**: Paper provides dataset; code link not specified in PDF.
+- **Relevance**: Directly connects prediction markets with LLM uncertainty calibration.
+
+### Paper 5: ForecastQA: A Question Answering Challenge for Event Forecasting with Temporal Text Data
+- **Authors**: Jingqing Zhang, Yao Zhao, Mohammad Saleh, Peter J. Liu, Yang Liu
+- **Year**: 2021
+- **Source**: ACL 2021
+- **Key Contribution**: Early forecasting QA dataset with temporal constraints and MC/yes-no formats.
+- **Methodology**: Constructs forecasting questions grounded in temporal text; compares neural baselines.
+- **Datasets Used**: ForecastQA (train/dev/test public splits).
+- **Evaluation Metrics**: Accuracy.
+- **Results**: Human performance substantially exceeds baseline models; dataset remains challenging.
+- **Code Available**: Dataset available via project site.
+- **Relevance**: Provides baseline QA format for event forecasting with temporal grounding.
+
+### Paper 6: SCTc-TE: A Comprehensive Formulation and Benchmark for Temporal Event Forecasting
+- **Authors**: Yunchong Wang, Shuo Wang, Jialong Han, Haifeng Wang, Ming Gao, Xiangnan He, Yongdong Zhang
+- **Year**: 2023 (arXiv:2312.01052)
+- **Source**: arXiv
+- **Key Contribution**: Formalizes SCTc-TE and introduces MidEast-TE and GDELT-TE datasets plus LoGo model.
+- **Methodology**: Builds structured complex event timelines and predicts future temporal events using local/global context graphs.
+- **Datasets Used**: MidEast-TE, GDELT-TE.
+- **Evaluation Metrics**: Event prediction accuracy; graph-based model comparisons.
+- **Results**: LoGo improves over baselines by leveraging local + global contexts.
+- **Code Available**: Yes (GDELT-ComplexEvent repo).
+- **Relevance**: Provides structured event forecasting data and baseline model.
+
+### Paper 7: Prediction Markets in Theory and Practice
+- **Authors**: Justin Wolfers, Eric Zitzewitz
+- **Year**: 2006
+- **Source**: NBER Working Paper 12083
+- **Key Contribution**: Summarizes theory and empirical results showing prediction markets can aggregate dispersed information effectively.
+- **Relevance**: Provides grounding for using market prices as probabilistic signals.
+
+### Paper 8: Interpreting Prediction Market Prices as Probabilities
+- **Authors**: Justin Wolfers, Eric Zitzewitz
+- **Year**: 2006
+- **Source**: NBER Working Paper 12200
+- **Key Contribution**: Provides conditions under which prediction market prices approximate mean beliefs of traders.
+- **Relevance**: Supports using prediction market prices as probabilistic priors for LLM-generated futures.
+
+## Common Methodologies
+- **LLM-based question generation**: Daily Oracle, OpenForesight, OpenForecast use LLMs to extract events and build questions.
+- **Retrieval-augmented forecasting**: BM25 or embedding retrieval to add recent news context.
+- **Open-ended evaluation**: LLM-as-judge or retrieval-augmented scoring (LRAE).
+- **Calibration-focused evaluation**: Brier score, ECE, and reliability diagrams (KalshiBench).
+
+## Standard Baselines
+- **Closed-book LLM forecasting** without retrieval
+- **BM25 RAG** for constrained open-book forecasting
+- **Graph-based models** (LoGo) for structured event prediction
+- **Text similarity metrics** (BEM/BertScore) for open-ended scoring
+
+## Evaluation Metrics
+- Accuracy (TF/MC/MCNC/MCAC)
+- F1 (open-ended tasks where applicable)
+- Brier score / Brier Skill Score
+- Expected Calibration Error (ECE)
+- Reliability diagrams / refusal rate
+
+## Datasets in the Literature
+- Daily Oracle (continuous news-based QA)
+- OpenForesight (open-ended forecasting from news)
+- OpenForecast (open-ended event forecasting from Wikipedia/WCEP)
+- ForecastQA (temporal forecasting QA)
+- SCTc-TE (MidEast-TE, GDELT-TE)
+- KalshiBench (prediction market questions)
+
+## Gaps and Opportunities
+- **Narrative generation**: Current benchmarks focus on QA or short answers; few evaluate full news-style narratives.
+- **Market integration**: Prediction market probabilities are rarely used to guide or calibrate LLM-generated content.
+- **Temporal leakage control**: Stronger tooling is needed for preventing leakage when using live retrieval.
+- **Evaluation**: Open-ended evaluation metrics remain noisy; human-aligned metrics for narrative plausibility are limited.
+
+## Recommendations for Our Experiment
+- **Recommended datasets**:
+  - ForecastQA (lightweight QA baseline)
+  - Daily Oracle (continuous news-based evaluation)
+  - OpenForesight (open-ended training data)
+  - OpenForecast (complex event sequences)
+- **Recommended baselines**:
+  - Closed-book LLM + RAG variants (BM25 + embedding retrieval)
+  - LoGo or other structured event baselines for comparison
+- **Recommended metrics**:
+  - Accuracy for QA tasks; Brier/ECE for calibration
+  - LLM-as-judge or LRAE for open-ended responses
+- **Methodological considerations**:
+  - Enforce strict temporal cutoffs to prevent leakage
+  - Use prediction market probabilities for calibration or as priors in generation
+  - Evaluate narrative plausibility separately from factual correctness
+
+
+════════════════════════════════════════════════════════════════════════════════
+                          PAPER REQUIREMENTS
+════════════════════════════════════════════════════════════════════════════════
+
+Generate a complete academic paper with the following structure:
+
+1. TITLE
+   - Clear, specific, informative
+   - Should convey main finding or contribution
+
+2. ABSTRACT (150-250 words)
+   - Problem statement
+   - Approach
+   - Key results
+   - Significance
+
+3. INTRODUCTION
+   - Research problem and motivation
+   - Gap in existing work
+   - Our contribution (be specific)
+   - Paper organization
+
+4. RELATED WORK
+   - Organized by theme/approach
+   - Position our work relative to prior work
+   - Cite papers from literature review
+
+5. METHODOLOGY
+   - Clear description of approach
+   - Experimental setup
+   - Datasets used
+   - Evaluation metrics
+   - Baselines
+
+6. RESULTS
+   - Present results with tables and figures
+   - Statistical analysis
+   - Comparison to baselines
+   - Ablation studies (if applicable)
+
+7. DISCUSSION
+   - Interpretation of results
+   - Limitations
+   - Broader implications
+
+8. CONCLUSION
+   - Summary of contributions
+   - Key findings
+   - Future work
+
+9. REFERENCES
+   - BibTeX format
+   - All cited papers
+
+════════════════════════════════════════════════════════════════════════════════
+                          OUTPUT FORMAT
+════════════════════════════════════════════════════════════════════════════════
+
+Create a MODULAR LaTeX project with the following directory structure:
+
+paper_draft/
+├── main.tex              # Main file that imports all sections
+├── references.bib        # BibTeX references
+├── sections/
+│   ├── abstract.tex      # Abstract content
+│   ├── introduction.tex  # Introduction section
+│   ├── related_work.tex  # Related work section
+│   ├── methodology.tex   # Methodology section
+│   ├── results.tex       # Results section
+│   ├── discussion.tex    # Discussion section
+│   └── conclusion.tex    # Conclusion section
+├── figures/              # Directory for any generated figures
+├── tables/               # Directory for complex standalone tables
+└── appendix/             # Directory for appendix sections (if needed)
+
+INSTRUCTIONS:
+1. First, create the directory structure above (mkdir -p paper_draft/sections paper_draft/figures paper_draft/tables paper_draft/appendix)
+2. Write main.tex using the EXACT preamble for NEURIPS:
+
+   \documentclass{article}
+   \usepackage[final]{neurips_2025}  % NEURIPS style (neurips_2025.sty is in paper_draft/)
+   \usepackage[hidelinks]{hyperref}  % REQUIRED: clickable links
+   \usepackage{booktabs}  % REQUIRED: professional tables
+   \usepackage{graphicx}
+   \usepackage{amsmath,amssymb}
+
+   % Import command files
+   \input{commands/math}
+   \input{commands/general}
+   \input{commands/macros}
+
+   % Use this bibliography style:
+   \bibliographystyle{plainnat}
+
+   - Use \input{sections/...} to include each section
+   - Use \bibliography{references} for references
+3. Write each section file with COMPLETE content (no placeholders)
+4. Each section file should include its \section{} command
+5. Write references.bib with all citations in BibTeX format
+6. After writing all files, compile the paper:
+   cd paper_draft && pdflatex -interaction=nonstopmode main.tex && bibtex main && pdflatex -interaction=nonstopmode main.tex && pdflatex -interaction=nonstopmode main.tex
+
+This modular structure allows humans to easily:
+- Edit individual sections without navigating a large file
+- Track changes per section
+- Reuse sections across different paper versions
+
+════════════════════════════════════════════════════════════════════════════════
+                          QUALITY REQUIREMENTS
+════════════════════════════════════════════════════════════════════════════════
+
+- Academic tone throughout
+- All claims must be supported by data from the experiment report
+- Proper citations using \cite{} commands
+- Clear figures and tables with proper captions
+- NO placeholder text - every section must have real content
+- The paper MUST compile without errors
+- If compilation fails, debug and fix the LaTeX errors
+
+════════════════════════════════════════════════════════════════════════════════
+                          LAB WRITING STYLE
+════════════════════════════════════════════════════════════════════════════════
+
+Follow these lab-specific conventions to match our paper style:
+
+1. LANGUAGE STYLE:
+   - Use active voice: "We propose", "We examine", "We focus on"
+   - Be direct and confident: "Our main question is...", "We hypothesize that..."
+   - State things clearly and simply - prefer plain language over jargon
+   - Use bold questions as paragraph organizers: {\bf what is X?}
+   - Include specific quantitative claims: "8.97% over baseline"
+   - Avoid fancy wording: "utilize" → "use", "facilitate" → "help"
+
+2. INTRODUCTION STRUCTURE:
+   - Engaging hook (get to the point quickly)
+   - Problem importance
+   - Gap identification
+   - Your approach with method figure reference
+   - Quantitative preview of results
+   - Contribution bullets (3-4 items, action verbs)
+
+3. CONTRIBUTION LISTS:
+   \begin{itemize}[leftmargin=*,itemsep=0pt,topsep=0pt]
+       \item We propose...
+       \item We conduct...
+       \item We complement...
+   \end{itemize}
+
+4. MODULAR COMMANDS STRUCTURE:
+   Create paper_draft/commands/ directory with:
+   - math.tex: Math notation macros (copy from templates/paper_writing/commands/)
+   - general.tex: Formatting macros (copy from templates/paper_writing/commands/)
+   - macros.tex: Project-specific term definitions
+
+   In main.tex, include:
+   \input{commands/math}
+   \input{commands/general}
+   \input{commands/macros}
+
+5. REFERENCE CONVENTIONS:
+   Use reference macros from math.tex:
+   - \figref{fig:name} for "figure 1" (lowercase, in-sentence)
+   - \Figref{fig:name} for "Figure 1" (capitalized, start of sentence)
+   - \secref{sec:name} for "section 2"
+
+6. TEXT FORMATTING:
+   - Use \para{Header text} for bold paragraph headers
+   - Define method/dataset names with \textsc and \xspace:
+     \newcommand{\methodname}{\textsc{MethodName}\xspace}
+
+7. TABLE FORMATTING:
+   - Use booktabs package (no vertical lines)
+   - Use \resizebox{\textwidth}{!}{...} for wide tables
+   - Use @{} to remove padding at table edges
+   - Use \cmidrule(lr){x-y} for sub-headers
+   - Use \textsc{} for dataset/method names in headers
+   - Bold best results with {\bf ...}
+
+8. FIGURE FORMATTING:
+   - Use 0.32\textwidth for 3-column subfigures
+   - Use 0.95\linewidth for full-width figures
+   - Use \input{figures/legend} for shared legends
+   - Write self-contained captions explaining key observations
+
+9. RESULTS PRESENTATION:
+   - Define \increase and \decrease for colored arrows (green up, red down)
+   - Bold best results in tables
+   - Report confidence intervals when available
+
+10. ALGORITHM STYLING:
+    - Use algpseudocode with [noend]
+    - Use \triangleright for comments
+
+11. HYPERLINKS (REQUIRED):
+    - Always use \usepackage[hidelinks]{hyperref} or with colored links
+    - All citations, section refs, figure refs, table refs must be clickable
+    - This is essential for reader navigation
+
+════════════════════════════════════════════════════════════════════════════════
+                          WORKFLOW: REVIEW AND REFLECT
+════════════════════════════════════════════════════════════════════════════════
+
+Before calling finish, you MUST complete these review steps:
+
+1. REVIEW RESOURCES (at the start):
+   - Read templates/skills/paper-writer/SKILL.md for detailed guidance
+   - Study templates/paper_writing/lab_style_guide.md for style conventions
+   - Browse paper_examples/ for formatting and language patterns
+
+2. SELF-REFLECTION (before finishing):
+   After writing all sections, review your work against these criteria:
+
+   LANGUAGE CHECK:
+   - [ ] Is the writing clear and jargon-free?
+   - [ ] Are claims specific with quantitative support?
+   - [ ] Is active voice used throughout?
+
+   FORMATTING CHECK:
+   - [ ] Does main.tex include \input{commands/math}, \input{commands/general}, \input{commands/macros}?
+   - [ ] Is hyperref package included for clickable references?
+   - [ ] Do tables use booktabs (no vertical lines)?
+   - [ ] Are best results bolded in tables?
+   - [ ] Are figures/tables properly captioned?
+
+   STRUCTURE CHECK:
+   - [ ] Does introduction follow: hook → importance → gap → approach → preview → contributions?
+   - [ ] Are contribution bullets specific with action verbs?
+   - [ ] Does the paper compile without errors?
+
+3. FIX ISSUES:
+   - Address any issues found in the self-reflection
+   - Re-compile and verify the PDF looks correct
+
+Only after completing this review should you consider the paper finished.

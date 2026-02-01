@@ -1,0 +1,50 @@
+{
+  "plausibility": {
+    "n": 30,
+    "baseline_mean": 4.366666666666666,
+    "market_mean": 5.0,
+    "t_stat": 5.640981181763427,
+    "p_value": 4.28258140995173e-06,
+    "cohens_d": 1.0298975465713263
+  },
+  "coherence": {
+    "n": 30,
+    "baseline_mean": 5.0,
+    "market_mean": 5.0,
+    "t_stat": NaN,
+    "p_value": NaN,
+    "cohens_d": 0.0
+  },
+  "alignment": {
+    "n": 30,
+    "baseline_mean": 3.1333333333333333,
+    "market_mean": 5.0,
+    "t_stat": 7.991568590666406,
+    "p_value": 8.185380841568227e-09,
+    "cohens_d": 1.4590541289859198
+  },
+  "probability_error": {
+    "n": 30,
+    "baseline_mean": 0.2823,
+    "market_mean": 0.0,
+    "t_stat": -7.416612250348212,
+    "p_value": 3.581746289940239e-08,
+    "cohens_d": -1.354081943261623
+  },
+  "hedging_rate": {
+    "n": 30,
+    "baseline_mean": 0.6929019261110783,
+    "market_mean": 0.9716655573560529,
+    "t_stat": 1.4855094518124556,
+    "p_value": 0.14819965906149557,
+    "cohens_d": 0.27121567871493857
+  },
+  "word_count": {
+    "n": 30,
+    "baseline_mean": 136.2,
+    "market_mean": 138.93333333333334,
+    "t_stat": 1.311335999035688,
+    "p_value": 0.20003255145763865,
+    "cohens_d": 0.23941610238013972
+  }
+}

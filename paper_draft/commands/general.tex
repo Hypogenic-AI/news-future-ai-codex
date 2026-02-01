@@ -1,0 +1,19 @@
+%%%%% GENERAL FORMATTING MACROS %%%%%
+% Minimal formatting macros for this paper
+
+\usepackage{xcolor}
+\usepackage{bm}
+\usepackage{enumitem}
+
+% Bold paragraph headers (use: \para{Header.} followed by text)
+\newcommand{\para}[1]{\noindent \textbf{#1}}
+
+% Colors for result arrows
+\definecolor{pastelgreen}{RGB}{50,205,50}
+
+% Arrows for showing improvement/decline in results
+\newcommand{\increase}{\textcolor{pastelgreen}{\bm{$\uparrow$}}}
+\newcommand{\decrease}{\textcolor{red}{\bm{$\downarrow$}}}
+
+% Comment style for algorithms (triangleright marker)
+\newcommand{\rightcomment}[1]{\(\triangleright\) {\small \it #1}}

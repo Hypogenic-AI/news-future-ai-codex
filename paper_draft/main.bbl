@@ -1,0 +1,60 @@
+\begin{thebibliography}{8}
+\providecommand{\natexlab}[1]{#1}
+\providecommand{\url}[1]{\texttt{#1}}
+\expandafter\ifx\csname urlstyle\endcsname\relax
+  \providecommand{\doi}[1]{doi: #1}\else
+  \providecommand{\doi}{doi: \begingroup \urlstyle{rm}\Url}\fi
+
+\bibitem[Chandak et~al.(2026)Chandak, Goel, Prabhu, Hardt, and
+  Geiping]{chandak2026openforecaster}
+Nikhil Chandak, Shashwat Goel, Ameya Prabhu, Moritz Hardt, and Jonas Geiping.
+\newblock Scaling open-ended reasoning to predict the future.
+\newblock \emph{arXiv preprint arXiv:2512.25070}, 2026.
+
+\bibitem[Dai et~al.(2025)Dai, Teehan, and Ren]{dai2025dailyoracle}
+Hui Dai, Ryan Teehan, and Mengye Ren.
+\newblock Are llms prescient? a continuous evaluation using daily news as the
+  oracle.
+\newblock In \emph{Proceedings of the International Conference on Machine
+  Learning}, 2025.
+
+\bibitem[Nel(2025)]{nel2025kalshibench}
+Lukas Nel.
+\newblock Do large language models know what they don{'}t know?
+\newblock \emph{arXiv preprint arXiv:2512.16030}, 2025.
+
+\bibitem[Wang et~al.(2023)Wang, Wang, Han, Wang, Gao, He, and
+  Zhang]{wang2023sctcte}
+Yunchong Wang, Shuo Wang, Jialong Han, Haifeng Wang, Ming Gao, Xiangnan He, and
+  Yongdong Zhang.
+\newblock Sctc-te: A comprehensive formulation and benchmark for temporal event
+  forecasting.
+\newblock \emph{arXiv preprint arXiv:2312.01052}, 2023.
+
+\bibitem[Wang et~al.(2025)Wang, Zhou, Yang, Ma, Wang, Dong, and
+  Anwar]{wang2025openforecast}
+Zhen Wang, Xi~Zhou, Yating Yang, Bo~Ma, Lei Wang, Rui Dong, and Azmat Anwar.
+\newblock Openforecast: A large-scale open-ended event forecasting dataset.
+\newblock In \emph{Proceedings of COLING}, 2025.
+
+\bibitem[Wolfers and Zitzewitz(2006{\natexlab{a}})]{wolfers2006prices}
+Justin Wolfers and Eric Zitzewitz.
+\newblock Interpreting prediction market prices as probabilities.
+\newblock Technical Report 12200, National Bureau of Economic Research,
+  2006{\natexlab{a}}.
+
+\bibitem[Wolfers and Zitzewitz(2006{\natexlab{b}})]{wolfers2006theory}
+Justin Wolfers and Eric Zitzewitz.
+\newblock Prediction markets in theory and practice.
+\newblock Technical Report 12083, National Bureau of Economic Research,
+  2006{\natexlab{b}}.
+
+\bibitem[Zhang et~al.(2021)Zhang, Zhao, Saleh, Liu, and
+  Liu]{zhang2021forecastqa}
+Jingqing Zhang, Yao Zhao, Mohammad Saleh, Peter~J. Liu, and Yang Liu.
+\newblock Forecastqa: A question answering challenge for event forecasting with
+  temporal text data.
+\newblock In \emph{Proceedings of the Association for Computational
+  Linguistics}, 2021.
+
+\end{thebibliography}

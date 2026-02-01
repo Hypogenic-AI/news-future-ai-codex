@@ -1,0 +1,83 @@
+NBER WORKING PAPER SERIES
+INTERPRETING PREDICTION MARKET PRICES AS PROBABILITIES
+Justin Wolfers
+Eric Zitzewitz
+Working Paper 12200
+http://www.nber.org/papers/w12200
+NATIONAL BUREAU OF ECONOMIC RESEARCH
+1050 Massachusetts Avenue
+Cambridge, MA 02138
+April 2006
+We would like to thank Ray Fair, Brian Galebach, Robin Hanson, Robert Hahn, Ed Kaplan, Brian Knight,
+Charles Manski, Marco Ottaviani, David Pennock, Erik Snowberg, Peter Norman Sørensen, Betsey
+Stevenson, Rob Stevenson and Abe Wickelgren for useful conversations and insights. Wolfers gratefully
+acknowledges the support of a Hirtle, Callaghan & Co. – Geewax, Terker and Co. Research Fellowship,
+Microsoft Research, the Mack Center for Technological Innovation, and the support of the Zull/Lurie Real
+Estate Center. The views expressed herein are those of the author(s) and do not necessarily reflect the views
+of the National Bureau of Economic Research.
+©2006 by Justin Wolfers and Eric Zitzewitz.  All rights reserved. Short sections of text, not to exceed two
+paragraphs, may be quoted without explicit permission provided that full credit, including © notice, is given
+to the source.
+Interpreting Prediction Market Prices as Probabilities
+Justin Wolfers and Eric Zitzewitz
+NBER Working Paper No. 12200
+April 2006
+JEL No. D4, D8, G13
+ABSTRACT
+While most empirical analysis of prediction markets treats prices of binary options as predictions
+of the probability of future events, Manski (2004) has recently argued that there is little existing
+theory supporting this practice.  We provide relevant analytic foundations, describing sufficient
+conditions under which prediction markets prices correspond with mean beliefs.  Beyond these
+specific sufficient conditions, we show that for a broad class of models prediction market prices are
+usually close to the mean beliefs of traders.  The key parameters driving trading behavior in
+prediction markets are the degree of risk aversion and the distribution of beliefs, and we provide
+some novel data on the distribution of beliefs in a couple of interesting contexts.  We find that
+prediction markets prices typically provide useful (albeit sometimes biased) estimates of average
+beliefs about the probability an event occurs.
+Justin Wolfers
+Business and Public Policy Department
+Wharton School, University of Pennsylvania
+3620 Locust Walk
+Room 1456 Steinberg-Deitrich Hall
+Philadelphia, PA 19104-6372
+and NBER
+jwolfers@wharton.upenn.edu
+Eric Zitzewitz
+Graduate School of Business
+Stanford University 
+518 Memorial Way
+Stanford, CA 94305
+ericz@stanford.edu
+1 
+1. Introduction 
+In a provocative recent paper, Charles Manski (2004) asked “What is the logical 
+basis for interpreting the price of an all-or-nothing futures contract as a market 
+probability that the event will occur?”  Moreover, he notes that “recent papers on 
+prediction markets provide no formal analysis showing how such markets aggregate 
+information or opinions.”  Manski poses an excellent question, and he highlights an 
+important topic for research.  As prediction markets have become of more widespread 
+interest, the prices of contracts tied to events as diverse as the re-election of President 
+Bush, the ouster of Saddam Hussein, next month’s non-farm payrolls number, or the 
+success of specific products have been interpreted in both academic and popular 
+discussion as though interchangeable with “the market’s beliefs”. 
+This paper presents an initial response to Manski’s challenge, providing a formal 
+model which provides a plausible microfoundation under which one can treat prediction 
+market prices as probabilities.  Further, we explore deviations from our baseline model, 
+and show that for most plausible parameters, prediction market prices at least 
+approximate the central tendency of the distribution of beliefs of traders.1  The specific 
+model offered by Manski is a special case of our model, and while he emphasizes special 
+assumptions that can lead his model to yield counter-intuitive results, we show that 
+sensible distributions of preferences and beliefs yield more intuitive results. 
+We proceed as follows.  The next section sketches two very simple models in 
+which prediction market prices coincide exactly with the mean of the belief among 
+traders.  The following section generalizes the model, showing that prediction market 
+prices can deviate from mean beliefs, but that this deviation is typically small.  The extent 
+of the deviation depends crucially on how widely dispersed beliefs are, and so in the final 
+section we present field evidence on this point.  To preview, our results suggest that 
+while prediction market prices and mean beliefs may diverge, they are typically very 
+close.  We interpret our results as providing a microfoundation for the claim that 
+prediction markets (approximately) efficiently aggregate beliefs. 
+ 
+                                                 
+1 In concurrent work, Steven Gjerstad (2004) and Ottaviani and Sørensen (2006) derive a number of related 
+results. 

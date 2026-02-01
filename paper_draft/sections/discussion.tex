@@ -1,0 +1,10 @@
+\section{Discussion}
+\label{sec:discussion}
+
+\para{Interpretation.} The improvements in plausibility and alignment suggest that explicit probabilistic priors help LLMs adopt uncertainty-aware narrative framing. The ceiling effect in coherence indicates that for short (120--180 word) articles, grammatical consistency is not the bottleneck; calibration is.
+
+\para{Limitations.} Our evaluation uses a small sample ($n=30$) and a single generation pass, so variance across runs is unknown. The LLM judge may share biases with the generator, which can inflate alignment scores. We also rely on current market probabilities without historical snapshots, which limits our ability to test post-resolution accuracy. Finally, many \manifold markets are niche, which may limit generalizability to mainstream news topics.
+
+\para{Failure modes.} Baseline narratives often sound overly definitive even when probabilities are near 0.5. Market-conditioned narratives sometimes over-anchor on the probability itself, repeating it without adding causal detail. These errors motivate future work on narrative tone control and factual grounding.
+
+\para{Broader implications.} Market-conditioned narratives could support scenario planning and editorial exploration, but they also risk being misused as predictions. Systems built on this approach should surface uncertainty prominently and avoid implying factual certainty where none exists.

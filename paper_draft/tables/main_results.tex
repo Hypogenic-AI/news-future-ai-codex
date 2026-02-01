@@ -1,0 +1,22 @@
+\begin{table}[t]
+    \centering
+    \resizebox{\textwidth}{!}{%
+    \begin{tabular}{@{}lccccc@{}}
+        \toprule
+        \textsc{Metric} & \textsc{Baseline} & \textsc{Market} & $p$-value & Cohen's $d$ & $n$ \\
+        \midrule
+        Plausibility $\uparrow$ & 4.367 & {\bf 5.000} & $4.28\times 10^{-6}$ & 1.030 & 30 \\
+        Coherence $\uparrow$ & {\bf 5.000} & {\bf 5.000} & -- & 0.000 & 30 \\
+        Alignment $\uparrow$ & 3.133 & {\bf 5.000} & $8.19\times 10^{-9}$ & 1.459 & 30 \\
+        Probability error $\downarrow$ & 0.282 & {\bf 0.000} & $3.58\times 10^{-8}$ & -1.354 & 30 \\
+        Hedging rate & 0.693 & 0.972 & 0.148 & 0.271 & 30 \\
+        Word count & 136.200 & 138.933 & 0.200 & 0.239 & 30 \\
+        \bottomrule
+    \end{tabular}%
+    }
+    \caption{Paired comparison of baseline and market-conditioned narratives.
+    Higher is better for plausibility, coherence, and alignment; lower is better for probability error.
+    Coherence is at ceiling for both conditions, so the $p$-value is undefined.
+    Best values are bolded where a direction is defined.}
+    \label{tab:main_results}
+\end{table}

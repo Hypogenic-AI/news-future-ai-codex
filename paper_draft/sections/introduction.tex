@@ -1,0 +1,17 @@
+\section{Introduction}
+\label{sec:introduction}
+
+\para{Forecasting narratives matter.} Large language models can already draft fluent news articles, and a ``news from the future'' format is attractive for scenario planning, policy analysis, and editorial exploration. Yet narrative forecasting also invites a familiar failure mode: overconfident details that read like facts even when the underlying event is uncertain.
+
+{\bf what is a calibrated future-news narrative?} We define a calibrated narrative as a coherent news-style article whose tone and implied likelihood track a probabilistic prior for the event. Prediction markets offer such priors by aggregating dispersed information, and their prices can be interpreted as probabilities under standard assumptions \cite{wolfers2006theory,wolfers2006prices}. However, most forecasting benchmarks emphasize short-form QA \cite{zhang2021forecastqa,dai2025dailyoracle} and open-ended event prediction \cite{wang2025openforecast,chandak2026openforecaster} rather than full narratives. Calibration-focused benchmarks tied to markets \cite{nel2025kalshibench} evaluate numeric answers, not narrative plausibility.
+
+\para{Our approach.} We test a simple, actionable intervention: add a market probability to the prompt and ask the model to write a future-news article consistent with that uncertainty (\figref{fig:method}). We compare this \marketprompt condition to a \baselineprompt that omits the probability while keeping the rest of the prompt fixed.
+
+\para{Quantitative preview.} On 30 \manifold markets, \marketprompt improves plausibility by 0.633 points (\increase 14.5\% over baseline), improves alignment by 1.867 points (\increase 59.6\%), and reduces probability error from 0.282 to 0.000, while coherence stays at a ceiling of 5.0 and length/hedging changes are not significant.
+
+\para{Contributions.} We make three contributions:
+\begin{itemize}[leftmargin=*,itemsep=0pt,topsep=0pt]
+    \item We propose \marketprompt, a lightweight prompting strategy that injects prediction-market probabilities into narrative generation.
+    \item We conduct a paired evaluation on 30 unresolved markets, using an LLM judge to measure plausibility, coherence, alignment, and probability error.
+    \item We show large, statistically significant gains in plausibility and alignment without degrading coherence or inflating length, and we analyze failure modes and limitations.
+\end{itemize}
